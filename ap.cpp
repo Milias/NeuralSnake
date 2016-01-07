@@ -13,8 +13,8 @@ ArtificialPlayer::ArtificialPlayer(uint32_t h, uint32_t w, uint32_t ns, uint32_t
 
 ArtificialPlayer::~ArtificialPlayer()
 {
-  //delete ga;
-  //delete sg;
+  delete ga;
+  delete sg;
   delete cmp;
 }
 
@@ -25,8 +25,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
     //std::cout << "&c1: " << &c1 << " c1.Object: " << c1.Object << std::endl;
-    t1 = *c1.ComputeOutput(sg->Repr);
-    sg->CheckInput(t1);
+    sg->CheckInput(*c1->ComputeOutput(sg->Repr));
   }
   sg->End();
   t1 = cw(sg);
@@ -34,8 +33,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
     //std::cout << "&c2: " << &c2 << " c2.Object: " << c2.Object << std::endl;
-    t2 = *c2.ComputeOutput(sg->Repr);
-    sg->CheckInput(t2);
+    sg->CheckInput(*c2->ComputeOutput(sg->Repr));
   }
   //std::cout << std::endl;
   sg->End();
@@ -56,7 +54,8 @@ void ArtificialPlayer::ShowPlay(bool Print)
 
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    sg->CheckInput(c.ComputeOutput(sg->Repr)[0]);
+    //std::cout << &c->NNs[0] << std::endl;
+    sg->CheckInput(*c->ComputeOutput(sg->Repr));
     if (Print) {
       sg->PrintBoard();
       std::cout << std::endl;

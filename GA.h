@@ -23,6 +23,7 @@ template <class T> struct ChromosomeWrapper
   T * Object;
 
   ChromosomeWrapper() : Object(NULL) {}
+  ~ChromosomeWrapper() {}
   ChromosomeWrapper(const ChromosomeWrapper<T>& w) : Object(w.Object) {
     //std::cout << "Copying a, Object: " << Object << std::endl;
   }
@@ -35,7 +36,7 @@ template <class T> struct ChromosomeWrapper
   ChromosomeWrapper<T>& operator=(const ChromosomeWrapper<T>& w) {
     //std::cout << "Copying b, previous: " << Object;
     Object = w.Object;
-    //w.Object = NULL;
+    w.Object = NULL;
     //std::cout << ", new: " << Object << std::endl;
     return *this;
   }
@@ -50,7 +51,7 @@ template <class T> struct ChromosomeWrapper
   T * operator->() { return Object; }
 };
 
-typedef RecurrentNeuralNetwork RNN;
+typedef ChromosomeWrapper<RecurrentNeuralNetwork> RNN;
 
 class GeneticAlgorithm
 {

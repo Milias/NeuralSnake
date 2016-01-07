@@ -21,7 +21,7 @@ void NeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy)
 
 double* NeuralNetwork::ComputeOutput(double *x)
 {
-  for (uint32_t j = 0; j < nHidden; j++) { h[j] = 0; t[j] = 0; }
+  for (uint32_t j = 0; j < nHidden; j++) { t[j] = 0; }
 
   for (uint32_t i = 0; i < nHidden; i++) {
     for (uint32_t j = 0; j < nInputs; j++) {
@@ -51,7 +51,7 @@ RecurrentNeuralNetwork::RecurrentNeuralNetwork() : nNetworks(0) {}
 RecurrentNeuralNetwork::~RecurrentNeuralNetwork()
 {
   std::cout << "Freeing NNs.\n";
-  //delete[] NNs;
+  delete[] NNs;
 }
 
 void RecurrentNeuralNetwork::Initialize(uint32_t nn, uint32_t *nl)
@@ -59,7 +59,7 @@ void RecurrentNeuralNetwork::Initialize(uint32_t nn, uint32_t *nl)
   //std::cout << "Initializing RNN.\n";
   nNetworks = nn; NetworkLayout = nl;
 
-  NNs = std::vector<NeuralNetwork>(nNetworks);
+  NNs = new NeuralNetwork[nNetworks];
   for (uint32_t i = 0; i < nNetworks; i++) {
     NNs[i].Initialize(NetworkLayout[2*i],NetworkLayout[2*i+1],NetworkLayout[2*i+2]);
   }

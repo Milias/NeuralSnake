@@ -22,11 +22,12 @@ int main(int argc, char** argv)
   uint32_t nl[] = {w*h,32,1};
 
   ArtificialPlayer *p1 = new ArtificialPlayer(w,h,ns,nn,nl);
-  //p1.Training(10);
-  for (uint32_t i = 0; i < 10000; i++) {
+  p1->Training(10);
+  /*
+  for (uint32_t i = 0; i < 100000; i++) {
     std::cout << i << std::endl;
     p1->ShowPlay(false);
   }
-
+  */
   return 0;
 }

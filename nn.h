@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <cmath>
-#include <vector>
 #include <json/json.h>
 
 double Sigmoid(double x);
@@ -36,7 +35,7 @@ private:
   uint32_t *NetworkLayout;
 
 public:
-  std::vector<NeuralNetwork> NNs;
+  NeuralNetwork* NNs;
   uint32_t nNetworks;
   double *GlobalOutput;
 
@@ -50,7 +49,7 @@ public:
     GlobalOutput(rnn.GlobalOutput)
   {
     rnn.NetworkLayout = NULL;
-    rnn.NNs = std::vector<NeuralNetwork>(0);
+    rnn.NNs = NULL;
     rnn.nNetworks = 0;
     rnn.GlobalOutput = NULL;
   }

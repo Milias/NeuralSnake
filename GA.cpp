@@ -3,7 +3,7 @@
 GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> *cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), ChromosomeCmp(cmp)
 {
   gen.seed(myclock::now().time_since_epoch().count());
-  rand = std::uniform_real_distribution<double>(0,1);
+  rand = std::uniform_real_distribution<double>(0.0,1.0);
   randd = std::uniform_real_distribution<double>(a,b);
   randn = std::normal_distribution<double>(0.0,1.0);
 
@@ -12,8 +12,8 @@ GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::
 
   Chromosomes = new RNN[Population];
   for (uint32_t i = 0; i < Population; i++) {
-    //Chromosomes[i].Object = new RecurrentNeuralNetwork;
-    Chromosomes[i].Initialize(nn,nl);
+    Chromosomes[i].Object = new RecurrentNeuralNetwork();
+    Chromosomes[i]->Initialize(nn,nl);
   }
 
   for (uint32_t i = 0; i < nNetworks; i++) {
@@ -44,28 +44,28 @@ void GeneticAlgorithm::InitializeRandom()
   for (uint32_t i = 0; i < Population*nHY; i++) { W_hy[i] = randd(gen); }
 
   for (uint32_t i = 0; i < Population; i++) {
-    Chromosomes[i].InitializeWeights(W_xh+i*nXH,W_hh+i*nHH,W_hy+i*nHY);
+    Chromosomes[i]->InitializeWeights(W_xh+i*nXH,W_hh+i*nHH,W_hy+i*nHY);
   }
 }
 
 void GeneticAlgorithm::Mutation(RNN &c)
 {
-  for (uint32_t i = 0; i < c.nNetworks; i++) {
-    for (uint32_t j = 0; j < c.NNs[i].nInputs*c.NNs[i].nHidden; j++) {
+  for (uint32_t i = 0; i < c->nNetworks; i++) {
+    for (uint32_t j = 0; j < c->NNs[i].nInputs*c->NNs[i].nHidden; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c.NNs[i].W_xh[j] += randn(gen);
+        c->NNs[i].W_xh[j] += randn(gen);
       }
     }
 
-    for (uint32_t j = 0; j < c.NNs[i].nHidden*c.NNs[i].nHidden; j++) {
+    for (uint32_t j = 0; j < c->NNs[i].nHidden*c->NNs[i].nHidden; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c.NNs[i].W_hh[j] += randn(gen);
+        c->NNs[i].W_hh[j] += randn(gen);
       }
     }
 
-    for (uint32_t j = 0; j < c.NNs[i].nHidden*c.NNs[i].nOutputs; j++) {
+    for (uint32_t j = 0; j < c->NNs[i].nHidden*c->NNs[i].nOutputs; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c.NNs[i].W_hy[j] += randn(gen);
+        c->NNs[i].W_hy[j] += randn(gen);
       }
     }
   }
@@ -73,28 +73,28 @@ void GeneticAlgorithm::Mutation(RNN &c)
 
 void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 {
-  for (uint32_t i = 0; i < c3.nNetworks; i++) {
-    for (uint32_t j = 0; j < c3.NNs[i].nInputs*c3.NNs[i].nHidden; j++) {
+  for (uint32_t i = 0; i < c3->nNetworks; i++) {
+    for (uint32_t j = 0; j < c3->NNs[i].nInputs*c3->NNs[i].nHidden; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c3.NNs[i].W_xh[j] = c1.NNs[i].W_xh[j];
+        c3->NNs[i].W_xh[j] = c1->NNs[i].W_xh[j];
       } else {
-        c3.NNs[i].W_xh[j] = c2.NNs[i].W_xh[j];
+        c3->NNs[i].W_xh[j] = c2->NNs[i].W_xh[j];
       }
     }
 
-    for (uint32_t j = 0; j < c3.NNs[i].nHidden*c3.NNs[i].nHidden; j++) {
+    for (uint32_t j = 0; j < c3->NNs[i].nHidden*c3->NNs[i].nHidden; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c3.NNs[i].W_hh[j] = c1.NNs[i].W_hh[j];
+        c3->NNs[i].W_hh[j] = c1->NNs[i].W_hh[j];
       } else {
-        c3.NNs[i].W_hh[j] = c2.NNs[i].W_hh[j];
+        c3->NNs[i].W_hh[j] = c2->NNs[i].W_hh[j];
       }
     }
 
-    for (uint32_t j = 0; j < c3.NNs[i].nHidden*c3.NNs[i].nOutputs; j++) {
+    for (uint32_t j = 0; j < c3->NNs[i].nHidden*c3->NNs[i].nOutputs; j++) {
       if (rand(gen) < GAR.MutRate) {
-        c3.NNs[i].W_hy[j] = c1.NNs[i].W_hy[j];
+        c3->NNs[i].W_hy[j] = c1->NNs[i].W_hy[j];
       } else {
-        c3.NNs[i].W_hy[j] = c2.NNs[i].W_hy[j];
+        c3->NNs[i].W_hy[j] = c2->NNs[i].W_hy[j];
       }
     }
   }
