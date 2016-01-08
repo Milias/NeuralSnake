@@ -19,9 +19,6 @@ class ArtificialPlayer
 private:
   SnakeGame *sg;
   GeneticAlgorithm *ga;
-
-  std::function<bool(RNN&,RNN&)> *cmp;
-
   CmpWeight cw;
 
   bool RNNCompare(RNN &c1, RNN &c2);

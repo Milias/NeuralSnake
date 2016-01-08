@@ -5,9 +5,9 @@ ArtificialPlayer::ArtificialPlayer(uint32_t h, uint32_t w, uint32_t ns, uint32_t
   sg = new SnakeGame(h,w);
   sg->Initialize();
 
-  cmp = new std::function<bool(RNN&,RNN&)>(std::bind(&ArtificialPlayer::RNNCompare, this, std::placeholders::_1, std::placeholders::_2));
+  //cmp = new std::function<bool(RNN&,RNN&)>(std::bind(&ArtificialPlayer::RNNCompare, this, std::placeholders::_1, std::placeholders::_2));
 
-  ga = new GeneticAlgorithm(ns,nn,nl,cmp,a,b);
+  ga = new GeneticAlgorithm(ns,nn,nl,std::bind(&ArtificialPlayer::RNNCompare, this, std::placeholders::_1, std::placeholders::_2),a,b);
   ga->InitializeRandom();
 }
 
@@ -24,7 +24,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
 
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    //std::cout << "&c1: " << &c1 << " c1.Object: " << c1.Object << std::endl;
+    std::cout << "&c1: " << &c1 << " c1.Object: " << c1.Object << std::endl;
     sg->CheckInput(*c1->ComputeOutput(sg->Repr));
   }
   sg->End();
@@ -32,7 +32,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
 
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    //std::cout << "&c2: " << &c2 << " c2.Object: " << c2.Object << std::endl;
+    std::cout << "&c2: " << &c2 << " c2.Object: " << c2.Object << std::endl;
     sg->CheckInput(*c2->ComputeOutput(sg->Repr));
   }
   //std::cout << std::endl;

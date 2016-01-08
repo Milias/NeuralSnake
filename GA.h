@@ -24,27 +24,17 @@ template <class T> struct ChromosomeWrapper
 
   ChromosomeWrapper() : Object(NULL) {}
   ~ChromosomeWrapper() {}
-  ChromosomeWrapper(const ChromosomeWrapper<T>& w) : Object(w.Object) {
-    //std::cout << "Copying a, Object: " << Object << std::endl;
-  }
-
-  ChromosomeWrapper(ChromosomeWrapper<T>&& w) : Object(w.Object) {
-    //std::cout << "Moving a, Object: " << Object << std::endl;
-    //w.Object = NULL;
-  }
+  ChromosomeWrapper(const ChromosomeWrapper<T>& w) : Object(w.Object) {}
+  ChromosomeWrapper(ChromosomeWrapper<T>&& w) : Object(w.Object) { w.Object = NULL; }
 
   ChromosomeWrapper<T>& operator=(const ChromosomeWrapper<T>& w) {
-    //std::cout << "Copying b, previous: " << Object;
     Object = w.Object;
     w.Object = NULL;
-    //std::cout << ", new: " << Object << std::endl;
     return *this;
   }
 
   ChromosomeWrapper<T>& operator=(ChromosomeWrapper<T>&& w) {
-    //std::cout << "Moving b, previous: " << Object;
     std::swap(Object,w.Object);
-    //std::cout << ", new: " << Object << std::endl;
     return *this;
   }
 
@@ -67,12 +57,12 @@ private:
   uint32_t nXH, nHH, nHY;
   double *W_xh, *W_hh, *W_hy;
 
-  std::function<bool(RNN&,RNN&)> *ChromosomeCmp;
+  std::function<bool(RNN&,RNN&)> ChromosomeCmp;
 
 public:
   GenAlgRate GAR;
 
-  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> *cmp, double a = -10, double b = 10);
+  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)>& cmp, double a = -10, double b = 10);
   ~GeneticAlgorithm();
 
   void InitializeRandom();
