@@ -1,19 +1,15 @@
 CXXFLAGS += -std=c++11 -pedantic -Wall -O3
-LDFLAGS += -I../jsoncpp/include
+LDFLAGS += -I../jsoncpp/include -Iheader
 TARGET = bin/snake
 
 CPP = $(wildcard *.cpp)
-C = $(wildcard *.c)
-OBJ = $(CPP:.cpp=.o) $(C:.c=.o)
+OBJ = $(CPP:.cpp=.o)
 
 all : $(OBJ)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJ) -o $(TARGET)
 
 %.o : %.cpp
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -c $(CPP)
-
-%.o : %.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -c $(C)
 
 .PHONY = clean
 clean :

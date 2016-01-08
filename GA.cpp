@@ -1,6 +1,6 @@
 #include "GA.h"
 
-GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), ChromosomeCmp(cmp)
+GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), nSelected(ns), MutRate(0.1), ChromosomeCmp(cmp)
 {
   gen.seed(myclock::now().time_since_epoch().count());
   rand = std::uniform_real_distribution<double>(0.0,1.0);
@@ -25,8 +25,6 @@ GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::
   W_xh = new double[Population*nXH];
   W_hh = new double[Population*nHH];
   W_hy = new double[Population*nHY];
-
-  GAR.nSelected = ns;
 }
 
 GeneticAlgorithm::~GeneticAlgorithm()
@@ -52,19 +50,19 @@ void GeneticAlgorithm::Mutation(RNN &c)
 {
   for (uint32_t i = 0; i < c->nNetworks; i++) {
     for (uint32_t j = 0; j < c->NNs[i].nInputs*c->NNs[i].nHidden; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c->NNs[i].W_xh[j] += randn(gen);
       }
     }
 
     for (uint32_t j = 0; j < c->NNs[i].nHidden*c->NNs[i].nHidden; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c->NNs[i].W_hh[j] += randn(gen);
       }
     }
 
     for (uint32_t j = 0; j < c->NNs[i].nHidden*c->NNs[i].nOutputs; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c->NNs[i].W_hy[j] += randn(gen);
       }
     }
@@ -75,7 +73,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 {
   for (uint32_t i = 0; i < c3->nNetworks; i++) {
     for (uint32_t j = 0; j < c3->NNs[i].nInputs*c3->NNs[i].nHidden; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c3->NNs[i].W_xh[j] = c1->NNs[i].W_xh[j];
       } else {
         c3->NNs[i].W_xh[j] = c2->NNs[i].W_xh[j];
@@ -83,7 +81,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
     }
 
     for (uint32_t j = 0; j < c3->NNs[i].nHidden*c3->NNs[i].nHidden; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c3->NNs[i].W_hh[j] = c1->NNs[i].W_hh[j];
       } else {
         c3->NNs[i].W_hh[j] = c2->NNs[i].W_hh[j];
@@ -91,7 +89,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
     }
 
     for (uint32_t j = 0; j < c3->NNs[i].nHidden*c3->NNs[i].nOutputs; j++) {
-      if (rand(gen) < GAR.MutRate) {
+      if (rand(gen) < MutRate) {
         c3->NNs[i].W_hy[j] = c1->NNs[i].W_hy[j];
       } else {
         c3->NNs[i].W_hy[j] = c2->NNs[i].W_hy[j];
@@ -103,10 +101,10 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 void GeneticAlgorithm::Selection()
 {
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
-  for (uint32_t i = 0; i < GAR.nSelected; i++) {
-    for (uint32_t j = 0; j < GAR.nSelected; j++) {
-      Crossover(Chromosomes[i],Chromosomes[j],Chromosomes[i*GAR.nSelected+j]);
-      if (i!=j) Mutation(Chromosomes[i*GAR.nSelected+j]);
+  for (uint32_t i = 0; i < nSelected; i++) {
+    for (uint32_t j = 0; j < nSelected; j++) {
+      Crossover(Chromosomes[i],Chromosomes[j],Chromosomes[i*nSelected+j]);
+      if (i!=j) Mutation(Chromosomes[i*nSelected+j]);
     }
   }
 }
@@ -118,4 +116,9 @@ void GeneticAlgorithm::Simulate(uint32_t N)
     Selection();
   }
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
+}
+
+void GeneticAlgorithm::SaveProgress(char* File)
+{
+
 }

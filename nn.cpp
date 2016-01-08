@@ -13,10 +13,11 @@ void NeuralNetwork::Initialize(uint32_t ni, uint32_t nh, uint32_t no)
   t = new double[nHidden];
 }
 
-void NeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy)
+void NeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy, double *mem)
 {
   W_xh = xh; W_hh = hh; W_hy = hy;
-  for (uint32_t i = 0; i < nHidden; i++) { h[i] = 0.0; }
+  if (mem == NULL) { for (uint32_t i = 0; i < nHidden; i++) { h[i] = 0.0; } } else
+  { for (uint32_t i = 0; i < nHidden; i++) { h[i] = mem[i]; } }
 }
 
 double* NeuralNetwork::ComputeOutput(double *x)
@@ -65,16 +66,17 @@ void RecurrentNeuralNetwork::Initialize(uint32_t nn, uint32_t *nl)
   }
 }
 
-void RecurrentNeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy)
+void RecurrentNeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy, double *mem)
 {
   double *txh, *thh, *thy;
   txh = xh; thh = hh; thy = hy;
   for (uint32_t i = 0; i < nNetworks; i++) {
-    NNs[i].InitializeWeights(txh,thh,thy);
+    NNs[i].InitializeWeights(txh,thh,thy,mem);
 
-    txh = txh + NetworkLayout[2*i  ]*NetworkLayout[2*i+1];
-    thh = thh + NetworkLayout[2*i+1]*NetworkLayout[2*i+1];
-    thy = thy + NetworkLayout[2*i+1]*NetworkLayout[2*i+2];
+    txh += NetworkLayout[2*i  ]*NetworkLayout[2*i+1];
+    thh += NetworkLayout[2*i+1]*NetworkLayout[2*i+1];
+    thy += NetworkLayout[2*i+1]*NetworkLayout[2*i+2];
+    mem += NetworkLayout[2*i+1];
   }
 }
 

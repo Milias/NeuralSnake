@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <cmath>
-#include <json/json.h>
 
 double Sigmoid(double x);
 
@@ -17,7 +16,7 @@ public:
   }
 
   void Initialize(uint32_t ni, uint32_t nh, uint32_t no);
-  void InitializeWeights(double *xh, double *hh, double *hy);
+  void InitializeWeights(double *xh, double *hh, double *hy, double *mem = NULL);
   double* ComputeOutput(double *x);
 };
 
@@ -63,6 +62,6 @@ public:
   }
 
   void Initialize(uint32_t nn, uint32_t *nl);
-  void InitializeWeights(double *xh, double *hh, double *hy);
+  void InitializeWeights(double *xh, double *hh, double *hy, double *mem = NULL);
   double * ComputeOutput(double *x);
 };

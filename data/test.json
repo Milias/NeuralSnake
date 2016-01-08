@@ -1,0 +1,27 @@
+{
+  "GeneralData" : {
+    "Creation date" : 0.0,
+    "Last training" : 0.0
+  },
+  "BoardData" : {
+    "Width" : 16,
+    "Height" : 16
+  },
+  "NeuralData" : {
+    "Number" : 1,
+    "Layout" : [ 256, 128, 1],
+    "W" : {
+      "xh" : [],
+      "hh" : [],
+      "hy" : []
+    },
+    "Memory" : []
+  },
+  "GeneticData" : {
+    "Selection" : 16,
+    "MutRate" : 0.1
+  },
+  "Training" : {
+    "Generations" : 0
+  }
+}

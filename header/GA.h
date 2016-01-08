@@ -5,18 +5,11 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <json/json.h>
 
 #include "nn.h"
 
 typedef std::chrono::high_resolution_clock myclock;
-
-struct GenAlgRate
-{
-  double MutRate;
-  uint32_t nSelected;
-
-  GenAlgRate() : MutRate(0.1), nSelected(10) {}
-};
 
 template <class T> struct ChromosomeWrapper
 {
@@ -54,14 +47,12 @@ private:
   std::uniform_real_distribution<double> randd;
   std::normal_distribution<double> randn;
 
-  uint32_t nXH, nHH, nHY;
-  double *W_xh, *W_hh, *W_hy;
+  uint32_t nXH, nHH, nHY, nSelected;
+  double *W_xh, *W_hh, *W_hy, MutRate;
 
   std::function<bool(RNN&,RNN&)> ChromosomeCmp;
 
 public:
-  GenAlgRate GAR;
-
   GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a = -10, double b = 10);
   ~GeneticAlgorithm();
 
@@ -71,6 +62,8 @@ public:
   void Selection();
 
   void Simulate(uint32_t N);
+  void SaveProgress(char* File);
+  //void Load();
 
   RNN* GetChromosomes() { return Chromosomes; }
 };
