@@ -18,11 +18,12 @@ int main(int argc, char** argv)
   snek.PrintBoard();
   */
 
-  uint32_t w,h,ns,nn; w = 10; h = 10, ns = 10; nn = 1;
-  uint32_t nl[] = {w*h,32,1};
+  uint32_t w,h,ns,nn; w = 16; h = 16, ns = 16; nn = 1;
+  uint32_t nl[] = {w*h,128,1};
 
   ArtificialPlayer *p1 = new ArtificialPlayer(w,h,ns,nn,nl);
   p1->Training(10);
+  p1->ShowPlay();
   /*
   for (uint32_t i = 0; i < 100000; i++) {
     std::cout << i << std::endl;

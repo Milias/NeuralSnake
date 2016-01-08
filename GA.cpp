@@ -1,6 +1,6 @@
 #include "GA.h"
 
-GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> *cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), ChromosomeCmp(cmp)
+GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), ChromosomeCmp(cmp)
 {
   gen.seed(myclock::now().time_since_epoch().count());
   rand = std::uniform_real_distribution<double>(0.0,1.0);
@@ -102,7 +102,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 
 void GeneticAlgorithm::Selection()
 {
-  std::sort(Chromosomes, Chromosomes+Population, *ChromosomeCmp);
+  std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
   for (uint32_t i = 0; i < GAR.nSelected; i++) {
     for (uint32_t j = 0; j < GAR.nSelected; j++) {
       Crossover(Chromosomes[i],Chromosomes[j],Chromosomes[i*GAR.nSelected+j]);
@@ -117,5 +117,5 @@ void GeneticAlgorithm::Simulate(uint32_t N)
     std::cout << "Generation " << i << " of " << N << ".\n";
     Selection();
   }
-  std::sort(Chromosomes, Chromosomes+Population, *ChromosomeCmp);
+  std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
 }

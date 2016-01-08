@@ -62,7 +62,7 @@ private:
 public:
   GenAlgRate GAR;
 
-  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)>& cmp, double a = -10, double b = 10);
+  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a = -10, double b = 10);
   ~GeneticAlgorithm();
 
   void InitializeRandom();
@@ -72,5 +72,5 @@ public:
 
   void Simulate(uint32_t N);
 
-  RNN& GetBest() { return Chromosomes[0]; }
+  RNN* GetChromosomes() { return Chromosomes; }
 };
