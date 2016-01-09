@@ -18,13 +18,14 @@ int main(int argc, char** argv)
   snek.PrintBoard();
   */
 
-  uint32_t w,h,ns,nn; w = 8; h = 8, ns = 16; nn = 1;
-  uint32_t nl[] = {w*h,8,1};
+  //uint32_t w,h,ns,nn; w = 16; h = 16, ns = 16; nn = 1;
+  //uint32_t nl[] = {w*h,128,1};
 
   ArtificialPlayer *p1 = new ArtificialPlayer;
-  p1->Initialize(w,h,ns,nn,nl);
-  p1->Training(10);
-  p1->SaveProgress("data/test1.json");
+  //p1->Initialize(w,h,ns,nn,nl);
+  p1->LoadProgress(argv[1]);
+  p1->Training(std::atoi(argv[2]));
+  p1->SaveProgress(argv[1]);
   //p1->ShowPlay();
   /*
   for (uint32_t i = 0; i < 100000; i++) {

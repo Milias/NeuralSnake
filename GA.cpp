@@ -113,7 +113,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 
 void GeneticAlgorithm::Selection()
 {
-  std::cout << (Chromosomes - 1) << std::endl;
+  //std::cout << (Chromosomes - 1) << std::endl;
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
   for (uint32_t i = 0; i < nSelected; i++) {
     for (uint32_t j = 0; j < nSelected; j++) {

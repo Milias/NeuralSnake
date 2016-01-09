@@ -17,7 +17,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
 
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    std::cout << "c1: " << &c1 << ", " << c1.Object << std::endl;
+    //std::cout << "c1: " << &c1 << ", " << c1.Object << std::endl;
     sg->CheckInput(*c1->ComputeOutput(sg->Repr));
   }
   sg->End();
@@ -25,7 +25,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
 
   sg->Start();
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    std::cout << "c2: " << &c2 << ", " << c2.Object << std::endl;
+    //std::cout << "c2: " << &c2 << ", " << c2.Object << std::endl;
     sg->CheckInput(*c2->ComputeOutput(sg->Repr));
   }
   sg->End();
@@ -119,7 +119,7 @@ void ArtificialPlayer::SaveProgress(char const * File)
   for (uint32_t i = 0; i < ga->nHH; i++) { (*Root)["NeuralData"]["W"]["hh"][i] = ga->W_hh[i]; }
   for (uint32_t i = 0; i < ga->nHY; i++) { (*Root)["NeuralData"]["W"]["hy"][i] = ga->W_hy[i]; }
 
-  for (uint32_t j = 0, i = 0; j < (*Root)["NeuralData"]["Number"].asUInt(); j++, i+=(*Root)["NeuralData"]["Layout"][2*j+1].asUInt()) {
+  for (uint32_t j = 0, i = 0; j < (*Root)["NeuralData"]["Number"].asUInt(); j++, i += (*Root)["NeuralData"]["Layout"][2*j+1].asUInt()) {
     for (uint32_t k = 0; k < (*Root)["NeuralData"]["Layout"][2*j+1].asUInt(); k++) {
       (*Root)["NeuralData"]["Memory"][i+k] = ga->GetChromosomes()[0]->NNs[j].h[k];
     }
@@ -133,12 +133,10 @@ void ArtificialPlayer::SaveProgress(char const * File)
 
 void ArtificialPlayer::LoadProgress(char const * File)
 {
+  Root = new Json::Value;
   Json::Reader reader;
-  std::ifstream savefile(File);
-  if (!reader.parse(savefile, *Root)) {
-    std::cout  << "Failed to parse file: " << reader.getFormattedErrorMessages();
-    return;
-  }
+  std::ifstream savefile(File, std::ifstream::in);
+  savefile >> *Root;
   savefile.close();
 
   sg = new SnakeGame((*Root)["BoardData"]["Height"].asUInt(),(*Root)["BoardData"]["Width"].asUInt());
