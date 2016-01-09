@@ -34,14 +34,16 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
   return t1>t2;
 }
 
-void ArtificialPlayer::Training(uint32_t N, uint32_t batch)
+void ArtificialPlayer::Training(uint32_t N, char const * File, uint32_t batch)
 {
   std::cout << "Starting training.\n";
   if (N > batch && batch) {
-    for (uint32_t i = 0; i < N/batch; i++) {
+    for (uint32_t i = 0; i < N; i++) {
+      std::cout << "Batch #" << (i+1) << std::endl;
       ga->Simulate(batch);
       (*Root)["GeneralData"]["Last training"] = static_cast<Json::Value::UInt64>(std::chrono::high_resolution_clock::now().time_since_epoch().count() * std::chrono::high_resolution_clock::period::num / std::chrono::high_resolution_clock::period::den);
       (*Root)["Training"]["Generations"] = (*Root)["Training"]["Generations"].asUInt() + batch;
+      SaveProgress(File);
     }
   } else {
     ga->Simulate(N);

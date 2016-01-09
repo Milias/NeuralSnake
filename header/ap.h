@@ -1,6 +1,6 @@
 #pragma once
 #include <fstream>
-#include <json/json.h>
+#include "json.h"
 
 #include "GA.h"
 #include "snake.h"
@@ -30,7 +30,7 @@ public:
   ArtificialPlayer();
   ~ArtificialPlayer();
 
-  void Training(uint32_t N, uint32_t batch = 0);
+  void Training(uint32_t N, char const * File = "", uint32_t batch = 0);
   void ShowPlay(bool Print = true);
 
   void Initialize(uint32_t h, uint32_t w, uint32_t ns, uint32_t nn, uint32_t *nl, double a = -10, double b = 10);

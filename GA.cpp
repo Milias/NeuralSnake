@@ -126,7 +126,7 @@ void GeneticAlgorithm::Selection()
 void GeneticAlgorithm::Simulate(uint32_t N)
 {
   for (uint32_t i = 0; i < N; i++) {
-    std::cout << "Generation " << i << " of " << N << ".\n";
+    std::cout << "Generation " << (i+1) << " of " << N << ".\n";
     Selection();
   }
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
