@@ -16,8 +16,11 @@ void NeuralNetwork::Initialize(uint32_t ni, uint32_t nh, uint32_t no)
 void NeuralNetwork::InitializeWeights(double *xh, double *hh, double *hy, double *mem)
 {
   W_xh = xh; W_hh = hh; W_hy = hy;
-  if (mem == NULL) { for (uint32_t i = 0; i < nHidden; i++) { h[i] = 0.0; } } else
-  { for (uint32_t i = 0; i < nHidden; i++) { h[i] = mem[i]; } }
+  if (mem == NULL) {
+    for (uint32_t i = 0; i < nHidden; i++) { h[i] = 0.0; }
+  } else {
+    for (uint32_t i = 0; i < nHidden; i++) { h[i] = mem[i]; }
+  }
 }
 
 double* NeuralNetwork::ComputeOutput(double *x)

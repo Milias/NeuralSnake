@@ -1,5 +1,5 @@
-CXXFLAGS += -std=c++11 -pedantic -Wall -O3
-LDFLAGS += -I../jsoncpp/include -Iheader
+CXXFLAGS += -g -std=c++11 -pedantic -Wall
+LDFLAGS += -Ijson -Iheader
 TARGET = bin/snake
 
 CPP = $(wildcard *.cpp)

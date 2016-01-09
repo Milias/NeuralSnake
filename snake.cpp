@@ -20,7 +20,6 @@ SnakeGame::~SnakeGame()
   delete[] Board;
   delete[] Repr;
   delete[] temp;
-  delete GR;
 }
 
 void SnakeGame::Initialize(uint32_t s)
@@ -46,8 +45,6 @@ void SnakeGame::Start()
 void SnakeGame::End()
 {
   if(GameState != 2) return;
-  //delete GR;
-  //GR = new GameResult(Height,Width,Turn,FoodCount,Seed,SnakeLocation,Food,Moves);
   GameState = 3;
 }
 

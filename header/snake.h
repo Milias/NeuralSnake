@@ -6,41 +6,6 @@
 
 typedef std::chrono::high_resolution_clock myclock;
 
-struct GameResult
-{
-  uint32_t Height, Width, Turn, FoodCount, Seed;
-  uint32_t *SnakeLocation, *Food, *Moves;
-
-  /** Result:
-    0 - No errors.
-    1 - Out of bounds.
-    2 - Self-walking.
-    3 - No more room.
-  **/
-  uint32_t Result;
-
-  GameResult(uint32_t h, uint32_t w, uint32_t t, uint32_t fc, uint32_t s, uint32_t *sl, uint32_t *f, uint32_t *mvs) :
-    Height(h), Width(w), Turn(t), FoodCount(fc), Seed(s)
-  {
-    SnakeLocation = new uint32_t[FoodCount];
-    Food = new uint32_t[FoodCount];
-    Moves = new uint32_t[Turn];
-    for (uint32_t i = 0; i < 2*FoodCount; i++) {
-      SnakeLocation[i] = sl[i];
-      Food[i] = f[i];
-    }
-    for (uint32_t i = 0; i < Turn; i++) {
-      Moves[i] = mvs[i];
-    }
-  }
-
-  ~GameResult() {
-    delete[] SnakeLocation;
-    delete[] Food;
-    delete[] Moves;
-  }
-};
-
 class SnakeGame
 {
 private:
@@ -61,8 +26,6 @@ private:
     3 - Ended
   **/
   uint32_t GameState;
-
-  GameResult* GR;
 
 public:
   uint32_t Tiles;
@@ -96,7 +59,5 @@ public:
   bool ProcessInput(uint32_t Move);
 
   void UpdateRepr();
-  GameResult* GetGameResult() { return GR; }
-
   void PrintBoard();
 };

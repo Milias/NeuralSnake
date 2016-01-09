@@ -1,6 +1,6 @@
 #include "GA.h"
 
-GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b) : Population(ns*ns), nNetworks(nn), nXH(0), nHH(0), nHY(0), nSelected(ns), MutRate(0.1), ChromosomeCmp(cmp)
+GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b, double mr) : Population(ns*ns), nNetworks(nn), ChromosomeCmp(cmp), nXH(0), nHH(0), nHY(0), nH(0), nSelected(ns), MutRate(mr)
 {
   gen.seed(myclock::now().time_since_epoch().count());
   rand = std::uniform_real_distribution<double>(0.0,1.0);
@@ -13,13 +13,14 @@ GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::
   Chromosomes = new RNN[Population];
   for (uint32_t i = 0; i < Population; i++) {
     Chromosomes[i].Object = new RecurrentNeuralNetwork();
-    Chromosomes[i]->Initialize(nn,nl);
+    Chromosomes[i]->Initialize(nn,NetworkLayout);
   }
 
   for (uint32_t i = 0; i < nNetworks; i++) {
     nXH += NetworkLayout[2*i  ]*NetworkLayout[2*i+1];
     nHH += NetworkLayout[2*i+1]*NetworkLayout[2*i+1];
     nHY += NetworkLayout[2*i+1]*NetworkLayout[2*i+2];
+    nH  += NetworkLayout[2*i+1];
   }
 
   W_xh = new double[Population*nXH];
@@ -43,6 +44,18 @@ void GeneticAlgorithm::InitializeRandom()
 
   for (uint32_t i = 0; i < Population; i++) {
     Chromosomes[i]->InitializeWeights(W_xh+i*nXH,W_hh+i*nHH,W_hy+i*nHY);
+  }
+}
+
+void GeneticAlgorithm::InitializeLoad(double *mem)
+{
+  for (uint32_t i = 0; i < Population*nXH; i++) { W_xh[i] = W_xh[i%nXH]; }
+  for (uint32_t i = 0; i < Population*nHH; i++) { W_hh[i] = W_hh[i%nHH]; }
+  for (uint32_t i = 0; i < Population*nHY; i++) { W_hy[i] = W_hy[i%nHY]; }
+
+  for (uint32_t i = 0; i < Population; i++) {
+    Chromosomes[i]->InitializeWeights(W_xh+i*nXH,W_hh+i*nHH,W_hy+i*nHY,mem);
+    if (i>0) { Mutation(Chromosomes[i]); }
   }
 }
 
@@ -100,6 +113,7 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 
 void GeneticAlgorithm::Selection()
 {
+  std::cout << (Chromosomes - 1) << std::endl;
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
   for (uint32_t i = 0; i < nSelected; i++) {
     for (uint32_t j = 0; j < nSelected; j++) {
@@ -116,9 +130,4 @@ void GeneticAlgorithm::Simulate(uint32_t N)
     Selection();
   }
   std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
-}
-
-void GeneticAlgorithm::SaveProgress(char* File)
-{
-
 }

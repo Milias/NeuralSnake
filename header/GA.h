@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
-#include <json/json.h>
 
 #include "nn.h"
 
@@ -22,7 +21,6 @@ template <class T> struct ChromosomeWrapper
 
   ChromosomeWrapper<T>& operator=(const ChromosomeWrapper<T>& w) {
     Object = w.Object;
-    w.Object = NULL;
     return *this;
   }
 
@@ -47,23 +45,22 @@ private:
   std::uniform_real_distribution<double> randd;
   std::normal_distribution<double> randn;
 
-  uint32_t nXH, nHH, nHY, nSelected;
-  double *W_xh, *W_hh, *W_hy, MutRate;
-
   std::function<bool(RNN&,RNN&)> ChromosomeCmp;
 
 public:
-  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a = -10, double b = 10);
+  uint32_t nXH, nHH, nHY, nH, nSelected;
+  double *W_xh, *W_hh, *W_hy, MutRate;
+
+  GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double mr = 0.1, double a = -10, double b = 10);
   ~GeneticAlgorithm();
 
   void InitializeRandom();
+  void InitializeLoad(double *mem);
   void Mutation(RNN &c);
   void Crossover(RNN &c1, RNN &c2, RNN &c3);
   void Selection();
 
   void Simulate(uint32_t N);
-  void SaveProgress(char* File);
-  //void Load();
 
   RNN* GetChromosomes() { return Chromosomes; }
 };
