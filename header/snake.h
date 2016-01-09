@@ -12,9 +12,6 @@ private:
   const uint32_t Height;
   const uint32_t Width;
 
-  uint32_t *SnakeLocation, *Food, *Moves, *temp;
-  bool* Board;
-
   std::default_random_engine gen;
   std::uniform_int_distribution<uint32_t> randx;
   std::uniform_int_distribution<uint32_t> randy;
@@ -28,6 +25,9 @@ private:
   uint32_t GameState;
 
 public:
+  uint32_t *SnakeLocation, *Food, *Moves, *temp;
+  bool* Board;
+
   uint32_t Tiles;
   uint32_t Turn;
   uint32_t FoodCount;

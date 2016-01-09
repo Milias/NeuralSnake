@@ -1,0 +1,14 @@
+{
+  "Weights" : {
+    "Turn" : -0.01,
+    "FoodCount" : 10.0,
+    "Failed" : -2.0,
+    "Closeness" : 0.1
+  },
+  "Active" : {
+    "Turn" : true,
+    "FoodCount" : true,
+    "Failed" : true,
+    "Closeness" : true
+  }
+}

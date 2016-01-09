@@ -16,7 +16,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
   if (&c1 < ga->GetChromosomes() || &c2 < ga->GetChromosomes()) return false;
 
   sg->Start();
-  while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
+  while (sg->Result == 0 && sg->Turn < 20*sg->Tiles*sg->Tiles) {
     //std::cout << "c1: " << &c1 << ", " << c1.Object << std::endl;
     sg->CheckInput(*c1->ComputeOutput(sg->Repr));
   }
@@ -24,7 +24,7 @@ bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
   t1 = cw(sg);
 
   sg->Start();
-  while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
+  while (sg->Result == 0 && sg->Turn < 20*sg->Tiles*sg->Tiles) {
     //std::cout << "c2: " << &c2 << ", " << c2.Object << std::endl;
     sg->CheckInput(*c2->ComputeOutput(sg->Repr));
   }
