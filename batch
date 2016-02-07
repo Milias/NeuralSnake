@@ -1,0 +1,5 @@
+#!/bin/bash
+while true; do
+./bin/snake learn data/$1.json 200 5
+done
+

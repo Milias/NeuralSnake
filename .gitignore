@@ -1,0 +1,5 @@
+*.o
+bin/snake
+*.txt
+.DS_Store
+data/*
