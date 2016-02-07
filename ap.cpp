@@ -9,40 +9,26 @@ ArtificialPlayer::~ArtificialPlayer()
   delete Root;
 }
 
-bool ArtificialPlayer::RNNCompare(RNN &c1, RNN &c2)
+double ArtificialPlayer::RNNFitness(RNN &c)
 {
-  double t1, t2;
-
-  if (&c1 < ga->GetChromosomes() || &c2 < ga->GetChromosomes()) return false;
-
   sg->Start();
-  while (sg->Result == 0 && sg->Turn < 20*sg->Tiles*sg->Tiles) {
-    //std::cout << "c1: " << &c1 << ", " << c1.Object << std::endl;
-    sg->CheckInput(*c1->ComputeOutput(sg->Repr));
+  while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
+    sg->CheckInput(c->ComputeOutput(sg->Repr));
   }
   sg->End();
-  t1 = cw(sg);
-
-  sg->Start();
-  while (sg->Result == 0 && sg->Turn < 20*sg->Tiles*sg->Tiles) {
-    //std::cout << "c2: " << &c2 << ", " << c2.Object << std::endl;
-    sg->CheckInput(*c2->ComputeOutput(sg->Repr));
-  }
-  sg->End();
-  t2 = cw(sg);
-
-  return t1>t2;
+  return cw(sg);
 }
 
 void ArtificialPlayer::Training(uint32_t N, char const * File, uint32_t batch)
 {
   std::cout << "Starting training.\n";
-  if (N > batch && batch) {
+  if (batch) {
     for (uint32_t i = 0; i < N; i++) {
       std::cout << "Batch #" << (i+1) << std::endl;
       ga->Simulate(batch);
       (*Root)["GeneralData"]["Last training"] = static_cast<Json::Value::UInt64>(std::chrono::high_resolution_clock::now().time_since_epoch().count() * std::chrono::high_resolution_clock::period::num / std::chrono::high_resolution_clock::period::den);
       (*Root)["Training"]["Generations"] = (*Root)["Training"]["Generations"].asUInt() + batch;
+      std::cout << "Saving.\n";
       SaveProgress(File);
     }
   } else {
@@ -56,9 +42,16 @@ void ArtificialPlayer::ShowPlay(bool Print)
 {
   RNN *c = ga->GetChromosomes();
 
-  sg->Start();
+  sg->Start(); double *t;
+
+  if (Print) {
+    sg->PrintBoard();
+    std::cout << std::endl;
+  }
   while (sg->Result == 0 && sg->Turn < sg->Tiles*sg->Tiles) {
-    sg->CheckInput(*(*c)->ComputeOutput(sg->Repr));
+    t = (*c)->ComputeOutput(sg->Repr);
+    std::cout << "Up: " << t[0] << " Down: " << t[1] << " Left: " << t[2] << " Right: " << t[3] << std::endl;
+    sg->CheckInput(t);
     if (Print) {
       sg->PrintBoard();
       std::cout << std::endl;
@@ -77,8 +70,8 @@ void ArtificialPlayer::Initialize(uint32_t h, uint32_t w, uint32_t ns, uint32_t 
   sg->Initialize();
 
   ga = new GeneticAlgorithm(ns,nn,nl,
-    std::function<bool(RNN&,RNN&)>(
-      std::bind(&ArtificialPlayer::RNNCompare, this, std::placeholders::_1, std::placeholders::_2)
+    std::function<double(RNN&)>(
+      std::bind(&ArtificialPlayer::RNNFitness, this, std::placeholders::_1)
     ),a,b);
   ga->InitializeRandom();
 
@@ -153,8 +146,8 @@ void ArtificialPlayer::LoadProgress(char const * File)
     (*Root)["GeneticData"]["Selection"].asUInt(),
     (*Root)["NeuralData"]["Number"].asUInt(),
     nl,
-    std::function<bool(RNN&,RNN&)>(
-      std::bind(&ArtificialPlayer::RNNCompare, this, std::placeholders::_1, std::placeholders::_2)
+    std::function<double(RNN&)>(
+      std::bind(&ArtificialPlayer::RNNFitness, this, std::placeholders::_1)
     ),
     (*Root)["GeneticData"]["MutRate"].asUInt()
   );

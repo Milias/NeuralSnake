@@ -1,6 +1,6 @@
 #include "nn.h"
 
-double Sigmoid(double x) { return 1.0/(1.0+exp(-x)); }
+double Sigmoid(double x) { return 1.0/(1.0+exp(-x/10.0)); }
 
 NeuralNetwork::NeuralNetwork() : nHidden(0), nInputs(0), nOutputs(0) {}
 
@@ -46,7 +46,7 @@ double* NeuralNetwork::ComputeOutput(double *x)
     for (uint32_t j = 0; j < nHidden; j++) {
       y[i] += W_hy[i*nOutputs+j]*h[j];
     }
-    y[i] = Sigmoid(y[i]);
+    //y[i] = Sigmoid(y[i]);
   }
 
   return y;

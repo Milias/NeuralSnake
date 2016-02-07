@@ -1,6 +1,6 @@
 #include "GA.h"
 
-GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<bool(RNN&,RNN&)> cmp, double a, double b, double mr) : Population(ns*ns), nNetworks(nn), ChromosomeCmp(cmp), nXH(0), nHH(0), nHY(0), nH(0), nSelected(ns), MutRate(mr)
+GeneticAlgorithm::GeneticAlgorithm(uint32_t ns, uint32_t nn, uint32_t *nl, std::function<double(RNN&)> fit, double a, double b, double mr) : Population(ns*ns), nNetworks(nn), Fitness(fit), nXH(0), nHH(0), nHY(0), nH(0), nSelected(ns), MutRate(mr)
 {
   gen.seed(myclock::now().time_since_epoch().count());
   rand = std::uniform_real_distribution<double>(0.0,1.0);
@@ -113,8 +113,18 @@ void GeneticAlgorithm::Crossover(RNN &c1, RNN &c2, RNN &c3)
 
 void GeneticAlgorithm::Selection()
 {
-  //std::cout << (Chromosomes - 1) << std::endl;
-  std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
+  double avg = 0.0;
+  std::cout << "\tComputing fitness.\n";
+  for (uint32_t i = 0; i < Population; i++) {
+    Chromosomes[i].AddFitness(Fitness(Chromosomes[i]));
+  }
+  std::cout << "\tSorting.\n";
+  std::sort(Chromosomes, Chromosomes+Population);
+  for (uint32_t i = 0; i < nSelected; i++) {
+    avg += Chromosomes[i].Average;
+  } avg /= nSelected;
+  std::cout << "\tAverage best: " << avg << std::endl;
+  std::cout << "\tCrossover + mutation.\n";
   for (uint32_t i = 0; i < nSelected; i++) {
     for (uint32_t j = 0; j < nSelected; j++) {
       Crossover(Chromosomes[i],Chromosomes[j],Chromosomes[i*nSelected+j]);
@@ -126,8 +136,13 @@ void GeneticAlgorithm::Selection()
 void GeneticAlgorithm::Simulate(uint32_t N)
 {
   for (uint32_t i = 0; i < N; i++) {
-    std::cout << "Generation " << (i+1) << " of " << N << ".\n";
+    std::cout << "\nGeneration " << (i+1) << " of " << N << ".\n";
     Selection();
   }
-  std::sort(Chromosomes, Chromosomes+Population, ChromosomeCmp);
+
+  std::cout << "Finishing.\n\n";
+  for (uint32_t i = 0; i < Population; i++) {
+    Chromosomes[i].AddFitness(Fitness(Chromosomes[i]));
+  }
+  std::sort(Chromosomes, Chromosomes+Population);
 }

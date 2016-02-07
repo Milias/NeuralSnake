@@ -1,5 +1,21 @@
 #include "snake.h"
 
+uint64_t SplitBy2(uint64_t x)
+{
+  x &= 0xffffffff;
+  x = (x | (x << 16)) & 0xffff0000ffff;
+  x = (x | (x << 8)) & 0xff00ff00ff00ff;
+  x = (x | (x << 4)) & 0xf0f0f0f0f0f0f0f;
+  x = (x | (x << 2)) & 0x3333333333333333;
+  x = (x | (x << 1)) & 0x5555555555555555;
+  return x;
+}
+
+uint64_t Morton2D(uint64_t x, uint64_t y)
+{
+  return SplitBy2(x) | (SplitBy2(y) << 1);
+}
+
 SnakeGame::SnakeGame(uint32_t h, uint32_t w) : Height(h), Width(w), GameState(0), Tiles(h*w), Turn(0), FoodCount(0), Result(0)
 {
   SnakeLocation = new uint32_t[2*Tiles];
@@ -85,20 +101,10 @@ uint32_t SnakeGame::CheckInput(uint32_t Move)
   return Result;
 }
 
-uint32_t SnakeGame::CheckInput(double Move)
+uint32_t SnakeGame::CheckInput(double *Move)
 {
   if(GameState != 2) return 0;
-  uint32_t tmp = 0;
-  if (Move >= 0 && Move < 0.25) {
-    tmp = CheckInput((uint32_t)0);
-  } else if (Move >= 0.25 && Move < 0.5) {
-    tmp = CheckInput((uint32_t)1);
-  } else if (Move >= 0.5 && Move < 0.75) {
-    tmp = CheckInput((uint32_t)2);
-  } else if (Move >= 0.75 && Move <= 1.0) {
-    tmp = CheckInput((uint32_t)3);
-  }
-  return tmp;
+  return CheckInput(std::max_element(Move,Move+4)-Move);
 }
 
 void SnakeGame::NextHeadLoc(uint32_t Move, uint32_t* Pos)
@@ -164,14 +170,20 @@ bool SnakeGame::ProcessInput(uint32_t Move)
   return true;
 }
 
+void BinaryToChar(uint64_t x, char * msg, uint32_t N = 64)
+{
+  for (uint32_t i = 0; i < N; i++) { msg[i] = (x & (1ULL << (N-i-1)) ? '1' : '0'); }
+  msg[N] = '\0';
+}
+
 void SnakeGame::UpdateRepr()
 {
   for (uint32_t i = 0; i < Tiles; i++) { Repr[i] = 0; }
   for (uint32_t i = 1; i < Tiles && i <= FoodCount; i++) {
-    Repr[SnakeLocation[2*i]*Width+SnakeLocation[2*i+1]] = 1;
+    Repr[Morton2D(SnakeLocation[2*i],SnakeLocation[2*i+1])] = 5;
   }
-  Repr[SnakeLocation[0]*Width+SnakeLocation[1]] = 2;
-  Repr[Food[2*FoodCount]*Width+Food[2*FoodCount+1]] = 3;
+  Repr[Morton2D(SnakeLocation[0],SnakeLocation[1])] = 10;
+  Repr[Morton2D(Food[2*FoodCount],Food[2*FoodCount+1])] = 100;
 }
 
 void SnakeGame::PrintBoard()

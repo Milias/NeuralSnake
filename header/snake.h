@@ -3,8 +3,12 @@
 #include <chrono>
 #include <cstdint>
 #include <iostream>
+#include <algorithm>
 
 typedef std::chrono::high_resolution_clock myclock;
+
+uint64_t SplitBy2(uint64_t x);
+uint64_t Morton2D(uint64_t x, uint64_t y);
 
 class SnakeGame
 {
@@ -52,7 +56,7 @@ public:
   ***/
   uint32_t CheckInput(uint32_t Count, uint32_t* Moves);
   uint32_t CheckInput(uint32_t Move);
-  uint32_t CheckInput(double Move);
+  uint32_t CheckInput(double *Move);
 
   void NextHeadLoc(uint32_t Move, uint32_t* Pos);
   void MoveSnake(uint32_t* NewPos);

@@ -20,7 +20,13 @@ int main(int argc, char** argv)
     p1->SaveProgress(argv[2]);
   } else if (strcmp(argv[1],"play") == 0) {
     p1->LoadProgress(argv[2]);
+    char c;
     p1->ShowPlay();
+    while (std::cin >> c) {
+      std::cout << "===============================\n";
+      if (c=='q') break;
+      p1->ShowPlay();
+    }
   }
 
   return 0;

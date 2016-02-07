@@ -9,10 +9,10 @@ struct CmpWeight
 {
   double wTurn, wFoodCount, wCloseness, wFailed;
 
-  CmpWeight() : wTurn(-0.01), wFoodCount(10.0), wCloseness(0.1), wFailed(-2.0) {}
+  CmpWeight() : wTurn(1.0), wFoodCount(500.0), wCloseness(100.0), wFailed(-50.0) {}
 
   double operator()(SnakeGame *sg) {
-    return wTurn*sg->Turn + wFoodCount*sg->FoodCount + wCloseness*(abs(sg->SnakeLocation[0]-sg->Food[2*sg->FoodCount])+abs(sg->SnakeLocation[1]-sg->Food[2*sg->FoodCount+1])) + wFailed*(sg->Result > 0 ? 1 : 0);
+    return wTurn*sg->Turn + wFoodCount*sg->FoodCount + wCloseness/(1+abs(sg->SnakeLocation[0]-sg->Food[2*sg->FoodCount])+abs(sg->SnakeLocation[1]-sg->Food[2*sg->FoodCount+1])) + wFailed*(sg->Result > 0 ? 1 : 0)/sg->Turn;
   }
 };
 
@@ -24,7 +24,7 @@ private:
   CmpWeight cw;
   Json::Value *Root;
 
-  bool RNNCompare(RNN &c1, RNN &c2);
+  double RNNFitness(RNN &c);
 
 public:
   ArtificialPlayer();
